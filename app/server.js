@@ -1147,6 +1147,7 @@ app.post('/upload_photo', login_check, upload.single('file'), function(req, res,
 
 app.get('/search', function(req, res){
 	console.log('in search ' + req.query.query);
+		req.query.query=req.query.query.replace(/(java)*(script)/,"");
 	mongo.connect(dbname, function(err, db){
 	db.collection('pictures').find({ $text : { $search: req.query.query } }) .toArray(function(err, search){
 		if(err) { return err };
