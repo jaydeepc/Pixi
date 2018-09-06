@@ -25,13 +25,15 @@ var config = require('./server.conf');
 var session = require('client-sessions');
 var csurf = require('csurf');
 var jwt = require('jsonwebtoken');
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9+/=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/rn/g,"n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+
 
 //var dbname = 'mongodb://localhost:27017/Pixidb';
 var dbname = 'mongodb://pixidb:27017/Pixidb';
 //create express server and register global middleware
 var api = express();
-api.use(bodyParser.json());	
-api.use(bodyParser.urlencoded({    
+api.use(bodyParser.json());
+api.use(bodyParser.urlencoded({
 	extended: true
 }));
 
@@ -40,7 +42,7 @@ api.use(cookieParser());
 //serve files in /public and /uploads dir
 api.use(serveStatic(__dirname + '/uploads'));
 
-api.use(serveStatic(__dirname + '/public'));	
+api.use(serveStatic(__dirname + '/public'));
 
 //API binds to interface pixidb:7000
 api.listen(8090, function(){
@@ -61,7 +63,7 @@ mongo.connect(dbname, function(err, db) {
 function api_authenticate(user, pass, req, res){
 	mongo.connect(dbname, function(err, db){
 		 		  //Logger.setLevel('debug');
-		if(err){ 
+		if(err){
 			console.log('MongoDB connection error...');
 			return err;
 		}
@@ -80,19 +82,19 @@ function api_authenticate(user, pass, req, res){
        				res.json({message: "Token is a header JWT ", token: token});
 				}
 
-			
+
 			else
 				res.status(202).json({message: 'sorry pal, invalid login' });
 		});
-		
-	});	
+
+	});
 }
 
 function api_register(user, pass, req, res){
 	console.log('in register');
 	mongo.connect(dbname, function(err, db){
 		 		  //Logger.setLevel('debug');
-		if(err){ 
+		if(err){
 			console.log('MongoDB connection error...');
 			return err;
 		}
@@ -104,7 +106,7 @@ function api_register(user, pass, req, res){
 				res.status(202).json({message: user + ' is already registered.' });
 				}
 
-			
+
 			else {
 				if(req.body.is_admin) {
 					var admin = true;
@@ -118,17 +120,17 @@ function api_register(user, pass, req, res){
 				db.collection("counters")
 				  .findAndModify(
 					  	{ "_id": "userid" },
-					  	[], 
+					  	[],
 						{ "$inc" : { "seq": 1 } },
 					function(err, doc){
-						db.collection('users').insert({ 
-							_id: doc.value.seq, 
-							email: user, 
-							password: pass, 
-							name: name, 
+						db.collection('users').insert({
+							_id: doc.value.seq,
+							email: user,
+							password: pass,
+							name: name,
 							pic : faker.image.avatar(),
 							account_balance: 50,
-							is_admin: admin, 
+							is_admin: admin,
 							all_pictures : [] }, function(err, user){
 								if(err) { return err }
 								if(user != null) {
@@ -142,18 +144,18 @@ function api_register(user, pass, req, res){
 		       					} //if user
 
 							}) //insert
-					
+
 						} // seq call back
 					)
 				} // else
-		
-			}); //find one user	
+
+			}); //find one user
 		});
 }
 
 
 function api_token_check(req, res, next){
- console.log('token ' + JSON.stringify(req.headers['x-access-token']));	
+ console.log('token ' + JSON.stringify(req.headers['x-access-token']));
  var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
   // decode jwt token
@@ -161,13 +163,13 @@ function api_token_check(req, res, next){
 
     // verifies secret and checks exp
     console.log(config.session_secret);
-    jwt.verify(token, config.session_secret, function(err, user) {      
+    jwt.verify(token, config.session_secret, function(err, user) {
       if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });    
+        return res.json({ success: false, message: 'Failed to authenticate token.' });
       } else {
         // if everything is good, save to request for use in other routes
-        req.user = user; 
-        console.log('my user ' + JSON.stringify(req.user));   
+        req.user = user;
+        console.log('my user ' + JSON.stringify(req.user));
         next();
       }
     });
@@ -176,9 +178,9 @@ function api_token_check(req, res, next){
 
     // if there is no token
     // return an error
-    return res.status(403).send({ 
-        success: false, 
-        message: 'No token provided.' 
+    return res.status(403).send({
+        success: false,
+        message: 'No token provided.'
     });
 
   }
@@ -212,7 +214,7 @@ api.get('/api/search', function(req, res){
 			if(search.length > 0) {
 				console.log(search);
 				res.status(200).json(search);
-				
+
 				}
 			else {
 				res.status(500).send('No photos found containing ' + req.query.query);
@@ -234,7 +236,7 @@ api.get('/api/pictures', api_token_check, function(req, res){
 			if(pictures) {
 				console.log(pictures);
 				res.send(pictures);
-				
+
 			}
 		})
 	})
@@ -248,7 +250,7 @@ api.get('/api/picture/:pictureid', api_token_check, function(req, res){
 			if(picture) {
 				console.log(picture);
 				res.send(picture);
-				
+
 			}
 		})
 	})
@@ -271,7 +273,7 @@ api.delete('/api/picture/delete', api_token_check, function(req, res) {
 						}
 					else {
 						res.json('Photo ' +  req.query.picture_id + ' deleted!');
-						}		
+						}
 				})
 		})
 	}
@@ -302,7 +304,7 @@ api.get('/api/picture/delete/:picture', api_token_check, function(req, res) {
 									res.json('Photo ' +  req.params.picture + ' deleted!');
 									console.log(delete_photo);
 									console.log(err);
-									}		
+									}
 							})
 						}
 					else {
@@ -332,7 +334,7 @@ api.get('/api/picture/:picture_id/likes', api_token_check, function(req, res){
 		if(likes) {
 			console.log(likes);
 			res.json(likes);
-			
+
 			}
 		})
 	})
@@ -349,7 +351,7 @@ api.get('/api/picture/:picture_id/loves', api_token_check, function(req, res){
 		if(loves) {
 			console.log(loves);
 			res.json(loves);
-			
+
 			}
 		})
 	})
@@ -367,18 +369,18 @@ api.get('/api/pictures/love', api_token_check, function(req, res){
  	mongo.connect(dbname, function(err, db){
  		// see if user has money first.
  			console.log(req.user.user.email);
-			db.collection('users').findOne( { "email" : req.user.user.email }, function(err, usermoney) {					
+			db.collection('users').findOne( { "email" : req.user.user.email }, function(err, usermoney) {
 					if(err) { return err };
 					console.log('account ' + JSON.stringify(usermoney));
 					if(usermoney.account_balance >= .05) {  //give money to the photo
 						console.log('in create query ' + JSON.stringify(usermoney));
-						db.collection('loves').insert({ 
+						db.collection('loves').insert({
 							'user_id': req.user.user._id,
 							'picture_id': req.query.picture_id,
 							'amount': .05
 						}, function(err, new_love) {
 							db.collection('pictures')
-								.findOneAndUpdate( { _id : Number(req.query.picture_id) }, 
+								.findOneAndUpdate( { _id : Number(req.query.picture_id) },
 									{ $inc: { money_made :  .05 } },
 									function(err, picupdate){
 									if(err) { return err }
@@ -388,7 +390,7 @@ api.get('/api/pictures/love', api_token_check, function(req, res){
 								})
 							console.log(req.user.user._id);
 							db.collection('users')
-								.findAndModify( { "_id" : req.user.user._id }, 
+								.findAndModify( { "_id" : req.user.user._id },
 									[],
 									{ "$inc": { "account_balance" :  -.05 } },
 									function(err, userupdate){
@@ -405,7 +407,7 @@ api.get('/api/pictures/love', api_token_check, function(req, res){
 						res.json('You are out of money');
 
 					}
-					
+
 				})
 
 			})
@@ -422,19 +424,19 @@ api.get('/api/pictures/like', api_token_check, function(req, res){
  else {
  	//db call- if like exists, delete it, if not exists, add it.
  	mongo.connect(dbname, function(err, db){
-			db.collection('likes').findOne( { 
-				'user_id' : req.user.user._id, 
+			db.collection('likes').findOne( {
+				'user_id' : req.user.user._id,
 				'picture_id' : req.query.picture_id }, function(err, like) {
-					
+
 					if(err) { return err };
 					if(!like) {  //brand new like
 						console.log('in create query ' + like);
-						db.collection('likes').insert({ 
+						db.collection('likes').insert({
 							'user_id': req.user.user._id,
 							'picture_id': req.query.picture_id
 						}, function(err, new_like) {
 							db.collection('pictures')
-								.findOneAndUpdate( { _id : Number(req.query.picture_id) }, 
+								.findOneAndUpdate( { _id : Number(req.query.picture_id) },
 									{ $inc: { likes :  1 } },
 									function(err, picupdate){
 										if(err) { return err }
@@ -457,7 +459,7 @@ api.get('/api/pictures/like', api_token_check, function(req, res){
 							'picture_id': req.query.picture_id
 						}, function(err, remove_like){
 							db.collection('pictures')
-								  .findOneAndUpdate( { _id : Number(req.query.picture_id) }, 
+								  .findOneAndUpdate( { _id : Number(req.query.picture_id) },
 									{ $inc: { likes :  -1} },
 									function(err, picupdate){
 									if(err) { return err }
@@ -471,7 +473,7 @@ api.get('/api/pictures/like', api_token_check, function(req, res){
 							}
 						})
 					}
-					
+
 				})
 
 			})
@@ -493,12 +495,12 @@ api.post('/api/picture/upload', api_token_check, upload.single('file'), function
  			db.collection("counters")
 				  .findAndModify(
 					  	{ "_id": "pictureid" },
-					  	[], 
+					  	[],
 						{ "$inc" : { "seq": 1 } },
 					function(err, doc) {
-						db.collection('pictures').insert( { 
+						db.collection('pictures').insert( {
 						'_id'	: doc.value.seq,
-						'title' : req.file.originalname, 
+						'title' : req.file.originalname,
 						'image_url': req.file.path,
 						'name' : name,
 						'filename' : req.file.filename,
@@ -518,10 +520,10 @@ api.post('/api/picture/upload', api_token_check, upload.single('file'), function
 						}) // photo insert
  				}) //sequence call back
  			}) //db
- 	
+
  	} //else
 
- }); 
+ });
 
 
 
@@ -582,7 +584,7 @@ api.put('/api/user/edit_info', api_token_check, function(req, res){
 	console.log(setObj);
 
 	mongo.connect(dbname, function(err, db){
-		db.collection('users').findOneAndUpdate( 
+		db.collection('users').findOneAndUpdate(
 			{ _id : Number(req.user.user._id) }, { $set: objForUpdate },function(err, userupdate){
 			if (err) { return err }
 			if(userupdate) {
@@ -607,7 +609,7 @@ api.get('/api/other_user_info', api_token_check, function(req, res){
 		        }];
 
 		        res.json(retJson);
-				
+
 			}
 		})
 	});
@@ -623,7 +625,7 @@ api.get('/api/user/pictures', api_token_check, function(req, res){
 		if(pictures) {
 			console.log(pictures);
 			res.json(pictures);
-			
+
 			}
 		})
 	})
@@ -639,7 +641,7 @@ api.get('/api/user/likes', api_token_check, function(req, res){
 		if(likes) {
 			console.log(likes);
 			res.json(likes);
-			
+
 			}
 		})
 	})
@@ -654,7 +656,7 @@ api.get('/api/user/loves', api_token_check, function(req, res){
 		if(loves) {
 			console.log(loves);
 			res.json(loves);
-			
+
 			}
 		})
 	})
@@ -738,7 +740,7 @@ api.delete('/api/delete_photo', api_token_check, function(req, res) {
 						}
 					else {
 						res.json('Photo ' +  req.query.picture_id + ' deleted!');
-						}		
+						}
 				})
 		})
 	}
@@ -763,7 +765,7 @@ api.get('/user_delete_photo/', api_token_check, function(req, res) {
 						res.json('Photo ' +  req.query.picture_id + ' deleted!');
 						console.log(delete_photo);
 						console.log(err);
-						}		
+						}
 				})
 		})
 	}
@@ -779,8 +781,8 @@ api.get('/', function(req, res){
 });
 
 
-api.get('/logout', function(req, res){	
-	res.redirect('/login');	
+api.get('/logout', function(req, res){
+	res.redirect('/login');
 });
 
 api.get('/login', function(req, res){
@@ -797,7 +799,7 @@ api.get('/pixi', api_token_check, function(req, res){
 	res.sendFile('./pixi.html', {root: __dirname});
 })
 // csrf prevention - module cs
-//use csurf middleware to protect against csurf attacks - does not apily to GET requests unless ignoreMethods option is used 
+//use csurf middleware to protect against csurf attacks - does not apily to GET requests unless ignoreMethods option is used
 api.use(csurf({ cookie: true, }));
 
 //set XSRF-TOKEN cookie for each request
@@ -809,23 +811,23 @@ api.use(function(req, res, next){
 //error handler for csurf middleware
 api.use(function (err, req, res, next) {
 	if (err.code !== 'EBADCSRFTOKEN') return next(err);
-	//handle CSRF token errors here 
+	//handle CSRF token errors here
 	res.status(403).json({ message:  "Request has been tampered with "});
 });
 
 
 var app = express();
-app.use(bodyParser.json());	
-app.use(bodyParser.urlencoded({    
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
 	extended: true
 }));
 app.use(cookieParser());
 
 app.use(serveStatic(__dirname + '/uploads'));
 
-app.use(serveStatic(__dirname + '/public'));	
+app.use(serveStatic(__dirname + '/public'));
 
-//web session stored in client-side cookie 
+//web session stored in client-side cookie
 app.use(session({
 	cookieName: 'session',
 	secret: config.session_secret,
@@ -854,7 +856,7 @@ function app_authenticate(user, pass, req, res){
 	console.log(user);
 	mongo.connect(dbname, function(err, db){
 		if(err){ return err; }
-		
+
 		user = user.toLowerCase();
 		db.collection('users').findOne({email: user, password: pass },function(err, authuser){
 			console.log(user);
@@ -865,14 +867,40 @@ function app_authenticate(user, pass, req, res){
 				req.session.user = authuser;
 				if(req.session.authenticated) {
       				res.redirect('/pixi');
-				}				
+				}
 			}
 			else
 				res.redirect('/login?user=' + user);
 		});
-		
-	});	
+
+	});
 }
+
+
+function auth_token_check(req, res, next){
+ var token = req.body.auth_token;
+ try {
+	 mongo.connect(dbname, function(err, db){
+  	 db.collection('users').find( { _id : Number(req.params.userid) }).toArray(function(err, user){
+  		 if(user) {
+  			 console.log("user in auth_token");
+  			 console.log(user);
+  			 console.log(`token is ${token} and ${Base64.encode(user[0].name)} `);
+  			 if(token==Base64.encode(user[0].name)) {
+  				 return next();
+  			 }
+  			 return res.status(403).send({
+  			        success: false,
+  			        message: 'auth token not valid'
+  			    });
+  		 }
+  	 })
+   });
+ } catch (e) {
+	 console.log(e);
+ } 
+}
+
 
 function random_sentence() {
 	var samples = ["This day was {{ adjective }} and {{ adjective }} for {{ noun }}",
@@ -901,7 +929,7 @@ var login_check = function(req, res, next){
 	else {
 	//	console.log('not logged in');
 		res.redirect('/login');
-	}	
+	}
 }
 
 
@@ -943,7 +971,7 @@ app.get('/admin/users/search', function(req, res){
 		if(search.length > 0) {
 			console.log(search);
 			res.json(search);
-			
+
 			}
 		else {
 			res.status(500).send('Nothing found containting ' + req.query.search);
@@ -965,7 +993,7 @@ app.get('/admin/likes/search', function(req, res){
 			if(search.length > 0) {
 				console.log(search);
 				res.json(search);
-				
+
 				}
 			else {
 				res.status(500).send('Nothing found containting ' + req.query.search);
@@ -987,7 +1015,7 @@ app.get('/admin/loves/search', function(req, res){
 			if(search.length > 0) {
 				console.log(search);
 				res.json(search);
-				
+
 				}
 			else {
 				res.status(500).send('Nothing found containting ' + req.query.search);
@@ -998,15 +1026,15 @@ app.get('/admin/loves/search', function(req, res){
 
 })
 
-								
+
 app.post('/admin/money', function(req, res){
 
 	console.log(req.body.userid)
 	mongo.connect(dbname, function(err, db){
 	//db.collection('users').find({ $text : { $search: req.query.search} }) .toArray(function(err, search){
 	//db.collection('users').find( {email : req.query.search } ).toArray(function(err, search){
-		db.collection('users').findOneAndUpdate( 
-			{ _id : Number(req.body.userid) }, 
+		db.collection('users').findOneAndUpdate(
+			{ _id : Number(req.body.userid) },
 			{ $inc: { account_balance : 500 } }, function(err, result){
 				console.log(result);
 				if(err) { return err };
@@ -1014,13 +1042,13 @@ app.post('/admin/money', function(req, res){
 				if(result) {
 					console.log(result);
 					res.json(result);
-					
+
 					}
 				else {
 					res.status(500).send('Nothing found containting ' + req.query.result);
 					console.log('no pics matched');
 				}
-	
+
 			})
 		})
 })
@@ -1029,7 +1057,7 @@ app.post('/register', function(req, res){
 
   if ((req.body.email) && (req.body.password)) {
 	mongo.connect(dbname, function(err, db){
-		if(err){ 
+		if(err){
 			console.log('MongoDB connection error...');
 			return err;
 		}
@@ -1049,7 +1077,7 @@ app.post('/register', function(req, res){
 				db.collection("counters")
 				  .findAndModify(
 				  	{ "_id": "userid" },
-					[], 
+					[],
 					{ "$inc" : { "seq": 1 } },
 				function(err, doc){
 					db.collection('users').insert({
@@ -1064,7 +1092,7 @@ app.post('/register', function(req, res){
 							if(err) { return err }
 							if(user != null) {
 								console.log(user);
-						
+
 								req.session.authenticated = true;
 								req.session.user = user.ops[0];
 								res.redirect('/pixi');
@@ -1072,12 +1100,12 @@ app.post('/register', function(req, res){
 	       					} //if user
 
 							}) //insert
-					
+
 						} // seq call back
 					)
 				} // else
-		
-			}); //find one user	
+
+			}); //find one user
 		});
 
 	}
@@ -1110,12 +1138,12 @@ app.post('/upload_photo', login_check, upload.single('file'), function(req, res,
  			db.collection("counters")
 				  .findAndModify(
 					  	{ "_id": "pictureid" },
-					  	[], 
+					  	[],
 						{ "$inc" : { "seq": 1 } },
 					function(err, doc) {
-						db.collection('pictures').insert( { 
+						db.collection('pictures').insert( {
 						'_id'	: doc.value.seq,
-						'title' : req.file.originalname, 
+						'title' : req.file.originalname,
 						'image_url' : req.file.path,
 						'name' : name,
 						'filename' : req.file.filename,
@@ -1136,10 +1164,10 @@ app.post('/upload_photo', login_check, upload.single('file'), function(req, res,
 						}) // photo insert
  				}) //sequence call back
  			}) //db
- 		
+
  	} //else
 
- }); 
+ });
 
 
 //routes
@@ -1155,7 +1183,7 @@ app.get('/search', function(req, res){
 		if(search.length > 0) {
 			console.log(search);
 			res.json(search);
-			
+
 			}
 		else {
 			res.status(500).send('No photos found containing ' + req.query.query);
@@ -1179,15 +1207,15 @@ app.get('/user_info', login_check, function(req, res){
 
 
 app.get('/user_profile/:userid', login_check, function(req, res){
-	
+
 	if(!req.params.userid) { res.sendFile('./profile.html', {root: __dirname}); }
-	
+
 	else {
 		console.log('in here');
 		res.sendFile('./user_profile.html', {root: __dirname});
 	}
-	
-	
+
+
 
 });
 
@@ -1205,7 +1233,7 @@ app.get('/other_users_profile/:id', login_check, function(req, res) {
 		        }];
 
 		        res.json(retJson);
-				
+
 			}
 		})
 	});
@@ -1217,9 +1245,9 @@ app.get('/other_users_pictures/:id', login_check, function(req, res) {
 			if (err) { return err }
 			if(pictures) {
 				console.log(pictures);
-	
+
 		        res.json(pictures);
-				
+
 			}
 		})
 	});
@@ -1227,7 +1255,7 @@ app.get('/other_users_pictures/:id', login_check, function(req, res) {
 
 
 
-app.put('/user_info/:userid', login_check, function(req, res){
+app.put('/user_info/:userid', login_check, auth_token_check,function(req, res){
 	console.log('in user post ' + req.params.userid);
 
 	var objForUpdate = {};
@@ -1240,11 +1268,11 @@ app.put('/user_info/:userid', login_check, function(req, res){
 	console.log(setObj);
 
 	mongo.connect(dbname, function(err, db){
-		db.collection('users').findOneAndUpdate( 
+		db.collection('users').findOneAndUpdate(
 			{ _id : Number(req.params.userid) }, { $set: objForUpdate },function(err, userupdate){
 			if (err) { return err }
 			if(userupdate) {
-				console.log(userupdate);
+				console.log(userupdate.value.name);
 				res.status(200).json(userupdate);
 			}
 		})
@@ -1262,7 +1290,7 @@ app.get('/user_pictures', login_check, function(req, res){
 		if(pictures) {
 			//console.log(pictures);
 			res.json(pictures);
-			
+
 			}
 		})
 	})
@@ -1276,7 +1304,7 @@ app.get('/user_likes', login_check, function(req, res){
 		if(likes) {
 			//console.log(likes);
 			res.json(likes);
-			
+
 			}
 		})
 	})
@@ -1291,7 +1319,7 @@ app.get('/user_loves', login_check, function(req, res){
 		if(loves) {
 			//console.log(loves);
 			res.json(loves);
-			
+
 			}
 		})
 	})
@@ -1314,7 +1342,7 @@ app.get('/secret', function(req, res){
 
 app.get('/logout', function(req, res){
 	res.cookie('session', null);	//tell browser to set session as null to 'invalidate' session
-	res.redirect('/login');	
+	res.redirect('/login');
 });
 
 app.get('/login', function(req, res){
@@ -1335,7 +1363,7 @@ app.get('/register', function(req, res){
 
 
 app.get('/pictures', function(req, res){
-	var json = {};					
+	var json = {};
 	//queryMongo(res, 'Pixidb', 'pictures',"","")
 	// = function(res, database, collectionName, field, value)
 	mongo.connect(dbname, function(err, db){
@@ -1343,7 +1371,7 @@ app.get('/pictures', function(req, res){
 			if(pictures) {
 				//console.log(pictures);
 				res.send(pictures);
-				
+
 			}
 
 		})
@@ -1412,7 +1440,7 @@ app.get('/picture/:picture_id/likes', login_check, function(req, res){
 		if(likes) {
 			console.log(likes);
 			res.json(likes);
-			
+
 			}
 		})
 	})
@@ -1422,7 +1450,7 @@ app.get('/profile/:userid', login_check, function(req, res){
 	console.log('in profile' + req.params.userid);
 
 		res.sendFile('./profile.html', {root: __dirname});
-	
+
 })
 
 app.get('/like_photo/:picture_id', login_check, function(req, res){
@@ -1433,22 +1461,22 @@ app.get('/like_photo/:picture_id', login_check, function(req, res){
  else {
  	//db call- if like exists, delete it, if not exists, add it.
  	mongo.connect(dbname, function(err, db){
-			db.collection('likes').findOne( { 
-				'user_id' : req.session.user._id, 
+			db.collection('likes').findOne( {
+				'user_id' : req.session.user._id,
 				'picture_id' : Number(req.params.picture_id) }, function(err, like) {
-					
+
 					if(err) { return err };
 					if(!like) {  //brand new like
 						console.log('in create query ' + like);
-						db.collection('likes').insert({ 
+						db.collection('likes').insert({
 							'user_id': req.session.user._id,
 							'picture_id': Number(req.params.picture_id)
 						}, function(err, new_like) {
 							db.collection('pictures')
-								.findOneAndUpdate( { _id : Number(req.params.picture_id) }, 
-									{ 
-										$inc: { likes :  1 },  
-										$set: { updated_date: new Date() } 
+								.findOneAndUpdate( { _id : Number(req.params.picture_id) },
+									{
+										$inc: { likes :  1 },
+										$set: { updated_date: new Date() }
 									},
 									function(err, picupdate){
 										if(err) { return err }
@@ -1470,7 +1498,7 @@ app.get('/like_photo/:picture_id', login_check, function(req, res){
 							'picture_id': Number(req.params.picture_id)
 						}, function(err, remove_like){
 							db.collection('pictures')
-								.findOneAndUpdate( { _id : Number(req.params.picture_id) }, 
+								.findOneAndUpdate( { _id : Number(req.params.picture_id) },
 									{ $inc: { likes :  -1 },  $set: { updated_date: new Date() }  },
 									function(err, picupdate){
 										if(err) { return err }
@@ -1484,7 +1512,7 @@ app.get('/like_photo/:picture_id', login_check, function(req, res){
 							}
 						})
 					}
-					
+
 				})
 
 			})
@@ -1502,18 +1530,18 @@ if(!req.params.picture_id) {
  	mongo.connect(dbname, function(err, db){
  		// see if user has money first.
  			console.log(req.session.user.email);
-			db.collection('users').findOne( { "email" : req.session.user.email }, function(err, usermoney) {					
+			db.collection('users').findOne( { "email" : req.session.user.email }, function(err, usermoney) {
 					if(err) { return err };
 					console.log('account ' + JSON.stringify(usermoney));
 					if(usermoney.account_balance >= .05) {  //give money to the photo
 						console.log('in create query ' + JSON.stringify(usermoney));
-						db.collection('loves').insert({ 
+						db.collection('loves').insert({
 							'user_id': req.session.user._id,
 							'picture_id': req.params.picture_id,
 							'amount': .05
 						}, function(err, new_love) {
 							db.collection('pictures')
-								.findOneAndUpdate( { _id : Number(req.params.picture_id) }, 
+								.findOneAndUpdate( { _id : Number(req.params.picture_id) },
 									{ $inc: { money_made :  .05 } },
 									{ updated_date : new Date() },
 									function(err, picupdate){
@@ -1524,7 +1552,7 @@ if(!req.params.picture_id) {
 								})
 							console.log(req.session.user._id);
 							db.collection('users')
-								.findAndModify( { "_id" : req.session.user._id }, 
+								.findAndModify( { "_id" : req.session.user._id },
 									[],
 									{ "$inc": { "account_balance" :  -.05 } },
 									{ updated_date : new Date() },
@@ -1542,7 +1570,7 @@ if(!req.params.picture_id) {
 						res.json('You are out of money');
 
 					}
-					
+
 				})
 
 			})
@@ -1568,7 +1596,7 @@ app.delete('/user_delete_photo/:picture_id', login_check, function(req, res) {
 						res.json('Photo ' +  req.params.picture_id + ' deleted!');
 						console.log(delete_photo);
 						console.log(err);
-						}		
+						}
 				})
 		})
 	}
@@ -1598,7 +1626,7 @@ app.get('/user_delete_photo/:picture_id', login_check, function(req, res) {
 									res.json('Photo ' +  req.params.picture_id + ' deleted!');
 									console.log(delete_photo);
 									console.log(err);
-									}		
+									}
 							})
 						}
 					else {
@@ -1614,7 +1642,7 @@ app.get('/user_delete_photo/:picture_id', login_check, function(req, res) {
 });
 
 
-//use csurf middleware to protect against csurf attacks - does not apply to GET requests unless ignoreMethods option is used 
+//use csurf middleware to protect against csurf attacks - does not apply to GET requests unless ignoreMethods option is used
 app.use(csurf({
 	cookie: true,
 }));
@@ -1628,7 +1656,7 @@ app.use(function(req, res, next){
 //error handler for csurf middleware
 app.use(function (err, req, res, next) {
 	if (err.code !== 'EBADCSRFTOKEN') return next(err);
-	//handle CSRF token errors here 
+	//handle CSRF token errors here
 	res.status(403)
 	res.send('form tampered with')
 });
