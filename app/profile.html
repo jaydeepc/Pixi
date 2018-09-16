@@ -22,7 +22,7 @@
 	</head>
 	<body ng-app='pixi' ng-controller='pixiProfileController'>
 		<div class="container">
-			<div class="row">
+			<div class="row"  data-ng-init="user_info(); ">
 				<div class="col-md-5">
 					<a href="/"><img src="/images/pixi_logo.png"></a>
 				</div>
@@ -34,7 +34,7 @@
 							<ul class="nav nav-pills nav-fill justify-content-end">
 								<li class="nav-item"> <a class="nav-link" href='/about'>About <i class="fa fa-cogs" aria-hidden="true"></i> </span></a></li>
 				                <li class="nav-item" ><a class="nav-link" href='/pixi'>Share Pictures <i class="fa fa-bullhorn" aria-hidden="true"></i></a></li>
-								<li class="nav-item"><a class="nav-link active bg-info" href='/profile/'{{user._id}}>My Profile <i class="fa fa-user-circle" aria-hidden="true"></i> </a></li>
+								<li class="nav-item"><a class="nav-link active bg-info" href='/profile/{{user._id}}'>My Profile <i class="fa fa-user-circle" aria-hidden="true"></i> </a></li>
 				                <li class="nav-item"><a class="nav-link" href='/logout'>Logout <i class="fa fa-sign-out" aria-hidden="true"></i> </a></li>
 				                <li class="nav=item"><a class="nav-link disabled" href="/secret"> Secret <i class="fa fa-user-secret" aria-hidden="true"></i></a></li>
 			                </ul>
@@ -139,7 +139,6 @@
 
 			$scope.update_user_info = function(user){
 				console.log($scope.user_upd.email);
-				console.log(user,$scope);
 				$http({
 					method: 'PUT',
 					url: '/user_info/' + user,
@@ -154,6 +153,7 @@
 							$scope.user_alerts = [
 			        		{ type: 'success',  msg: "Profile Updated " + ($scope.user_upd.email || '') + ' ' + ($scope.user_upd.password || '') + ' ' + ($scope.user_upd.name || '') },
 			        		];
+									window.location=window.location;
 				        	$scope.closeAlert = function(index) {
 					        	$scope.alerts.splice(index, 1);
 					    	}
