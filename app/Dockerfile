@@ -1,4 +1,5 @@
 FROM node:6-alpine
+RUN echo -e "http://dl-cdn.alpinelinux.org/alpine/v3.5/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.5/community" > /etc/apk/repositories
 RUN apk add --no-cache make gcc g++ python
 RUN rm -rf /usr/src/pixi/web/uploads
 RUN mkdir -p /usr/src/pixi/web
