@@ -31,57 +31,56 @@
  
 
 
-	<title>Pixi: Share the $LOVE$</title>
+	<title>PicSells: Share the $LOVE$</title>
 	</head>
 	<body ng-app='pixi' ng-controller='pixiController'>
 		<div class="container">
 			<div class="row">
 				<div class="col-md-5">
-					<a href="/"><img src="/images/pixi_logo.png"></a>
+					<a href="/"><img src="/images/tw_logo.png"></a>
 				</div>
 				<div class="col-md-7">
 				<br>
-			
+
 					<br>
-					
-				
+
+
 							<ul class="nav nav-pills nav-fill justify-content-end">
-								<li class="nav-item"> <a class="nav-link" href='/about'>About <i class="fa fa-cogs" aria-hidden="true"></i> </span></a></li>
 				                <li class="nav-item" ><a class="nav-link active bg-info" href='/pixi'>Share Pictures <i class="fa fa-bullhorn" aria-hidden="true"></i></a></li>
 								<li class="nav-item"><a class="nav-link" href='/profile/{{ user._id }}' >My Profile <i class="fa fa-user-circle" aria-hidden="true"></i> </a></li>
-				                <li class="nav-item"><a class="nav-link" href='/logout'>Logout <i class="fa fa-sign-out" aria-hidden="true"></i> </a></li> 
+				                <li class="nav-item"><a class="nav-link" href='/logout'>Logout <i class="fa fa-sign-out" aria-hidden="true"></i> </a></li>
 				                <li class="nav=item"><a class="nav-link disabled" href="/secret"> Secret <i class="fa fa-user-secret" aria-hidden="true"></i></a></li>
-				               
-			                </ul>			   
+
+			                </ul>
 			    </div>
-			           
+
 
 			</div>
-		
+
 
 			<br><br>
 			<div class="card card-outline-info mb-3 text-center">
-				  <div class="card-block">
-				    <blockquote class="card-blockquote">
-				      <p align="left"><b>- Pixi is an intentionally vulnerable web application and API intended to help developers, pentesters, builders, breakers and those interested to learn more about web and API security. <br> <br>There are two modes, <a href="/about">OWASP Top 10 mode </a>, where you can perform attacks against the Top 10, or in <a href="/ctf">CTF mode</a> <span class="badge badge-danger">Interactive CTF Coming Soon!</span> where you can earn points for completeting challenges. </b> </p>
-				      <footer><h4>Pixi now has an <a href="api-docs/">API on port 8090</a> <span class="badge badge-info">New</span> use <a href="https://www.getpostman.com/">Postman</a> to check it out</h4></footer>
-				    </blockquote>
-				  </div>
-				</div>
+				  <!--<div class="card-block">-->
+				    <!--<blockquote class="card-blockquote">-->
+				      <!--<p align="left"><b>- Pixi is an intentionally vulnerable web application and API intended to help developers, pentesters, builders, breakers and those interested to learn more about web and API security. <br> <br>There are two modes, <a href="/about">OWASP Top 10 mode </a>, where you can perform attacks against the Top 10, or in <a href="/ctf">CTF mode</a> <span class="badge badge-danger">Interactive CTF Coming Soon!</span> where you can earn points for completeting challenges. </b> </p>-->
+				      <!--<footer><h4>Pixi now has an <a href="api-docs/">API on port 8090</a> <span class="badge badge-info">New</span> use <a href="https://www.getpostman.com/">Postman</a> to check it out</h4></footer>-->
+				    <!--</blockquote>-->
+				  <!--</div>-->
+				<!--</div>-->
 			<div class="row" data-ng-init="user_info(); user_likes(); user_loves(); all_users(); total_money();">
 			<div class="col-8">
-				<div class="card card-inverse card-info"> 
+				<div class="card card-inverse card-info">
 					<div class="card-header text-center">
 						<h1 class="card-title">at a glance stats <i class="fa fa-bar-chart" aria-hidden="true"></i></h1>
 					</div>
 					<div class="card-text">
 						<br>
 						 <div class="col-8" style="border-right: 1px solid; float:left">
-							 <h4> &bull; Pixi repository contains <b>{{ pictures.length }} pictures</b>  </h4>
-							 <h4> &bull; Pixi has <b>{{ registered_users }} registered users</b>  </h4>
+							 <h4> &bull; PicSells repository contains <b>{{ pictures.length }} pictures</b>  </h4>
+							 <h4> &bull; PicSells has <b>{{ registered_users }} registered users</b>  </h4>
 							 <h4> &bull; Your UserID is <b> {{ user._id }} </b> </h4>
 							 <h4> &bull; Your email is <b> {{ user.email }} </b> </h4>
-							 <h4> &bull; Your account balance is: {{ user.account_balance | number:2 }} <i class="fa fa-btc" aria-hidden="true"></i> </h4>					  
+							 <h4> &bull; Your account balance is: {{ user.account_balance | number:2 }} <i class="fa fa-btc" aria-hidden="true"></i> </h4>
 						 </div>
 						 <div class="col-4" style="float:left">
 							 <h5> Number of Liked Photos: <b> {{ likes.length }} </b> </h5>
@@ -100,9 +99,9 @@
 						<h1 class="card-title">upload photo <i class="fa fa-camera-retro" aria-hidden="true"></i></h1>
 					</div>
 					<div class="card-block">
-				  		<form enctype="multipart/form-data" ng-submit="upload_photo(file)" >		  	
+				  		<form enctype="multipart/form-data" ng-submit="upload_photo(file)" >
 	 					 <alert ng-repeat="alert in alerts" type="alert.type"  close="closeAlert($index)">
-		 					 <div class="alert alert-dismissible alert-{{ alert.type }}" role="alert"> {{ alert.msg }}  
+		 					 <div class="alert alert-dismissible alert-{{ alert.type }}" role="alert"> {{ alert.msg }}
 		 					 	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 		 					 		<span aria-hidden="true">&times;</span>
 		 					 	</button>
@@ -118,7 +117,7 @@
 				  	</div>
 				  		<button type="submit" class="btn btn-lg btn-info">Submit</button>
 						</form>
-					</div>	
+					</div>
 				</div>
 			</div>
 		  </div>
@@ -129,7 +128,8 @@
     		</style>
     		<form ng-submit="search(search_query)" >
 			 <label class="sr-only" for="inlineFormInput">Name</label>
-			  <input type="text" class="form-control form-control-lg mb-2 fa-placholder" ng-model="search.query" id="search_query" placeholder="&#xf002; search pixi">
+			  <input type="text" class="form-control form-control-lg mb-2 fa-placholder" ng-model="search.query"
+					 id="search_query" placeholder="&#xf002; search PicSells">
 			</form>
 			 <br><br>
 		  	<div class="row" data-ng-init="user_pictures();">
@@ -137,7 +137,7 @@
 			<h1> photos <i class="fa fa-picture-o" aria-hidden="true"></i> </h1>
 			<br>
 			 <alert ng-repeat="alert in alerts" type="alert.type"  close="closeAlert($index)">
-		 			<div class="alert alert-dismissible alert-{{ alert.type }}" role="alert"> {{ alert.msg }}  
+		 			<div class="alert alert-dismissible alert-{{ alert.type }}" role="alert"> {{ alert.msg }}
 		 					<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 		 						<span aria-hidden="true">&times;</span>
 		 			 	</button>
@@ -147,7 +147,7 @@
 					 <button type="submit" ng-click="clear();" class="btn btn-info">clear search</button>
 				 </div>
 				<b ng-bind-html="search_response"></b><br>
-	
+
 			 <div class="card-deck" data-ng-init="all_photos()"> <!-- infinite-scroll="load_more_photos()" infinite-scroll-distance="3" -->
  				<div class="card" style="margin-bottom: 1em;" ng-repeat="picture in pictures">
 				    <center><img class="card-img-top" ng-src="{{ picture.filename }}" width="235" height="200" style="margin-top:8px;" alt="Card image cap"></center>
@@ -155,10 +155,10 @@
 				      <h4 class="card-title">{{ picture.name}} </h4>
 				      <p class="card-text">{{ picture.description }}
 				      <h2 style="float:left; margin-right:1em;">
-				      	<i ng-click="like_photo(picture._id)" class="fa fa-heart" aria-hidden="true"></i> 
-				      	{{ picture.likes }} </h2> 
+				      	<i ng-click="like_photo(picture._id)" class="fa fa-heart" aria-hidden="true"></i>
+				      	{{ picture.likes }} </h2>
 				      <h2>
-				      	<i class="fa fa-btc" ng-click="love_photo(picture._id)" aria-hidden="true"> </i> 
+				      	<i class="fa fa-btc" ng-click="love_photo(picture._id)" aria-hidden="true"> </i>
 				      	 {{ picture.money_made | number:2 }}</h2>
 
 				      </p>
@@ -167,7 +167,7 @@
 				    </div>
 				</div>
 			</div>
-                    
+
                </div>
 			</div>
 	  </div>
