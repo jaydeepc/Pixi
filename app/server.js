@@ -795,7 +795,7 @@ api.get('/register', function(req, res){
 
 })
 
-api.get('/pixi', api_token_check, function(req, res){
+api.get('/picsells', api_token_check, function(req, res){
 	res.sendFile('./pixi.html', {root: __dirname});
 })
 // csrf prevention - module cs
@@ -866,7 +866,7 @@ function app_authenticate(user, pass, req, res){
 				req.session.authenticated = true;
 				req.session.user = authuser;
 				if(req.session.authenticated) {
-      				res.redirect('/pixi');
+      				res.redirect('/picsells');
 				}
 			}
 			else
@@ -898,7 +898,7 @@ function auth_token_check(req, res, next){
    });
  } catch (e) {
 	 console.log(e);
- } 
+ }
 }
 
 
@@ -951,7 +951,7 @@ app.use(admin_check.unless({path: /^(?!\/admin).*/}));
 
 
 app.get('/', login_check, function(req, res){
-	res.redirect('/pixi');
+	res.redirect('/picsells');
 	//console.log(req.session);
 });
 
@@ -1095,7 +1095,7 @@ app.post('/register', function(req, res){
 
 								req.session.authenticated = true;
 								req.session.user = user.ops[0];
-								res.redirect('/pixi');
+								res.redirect('/picsells');
 								console.log('logged in');
 	       					} //if user
 
@@ -1115,7 +1115,7 @@ app.post('/register', function(req, res){
 });
 
 
-app.get('/pixi', login_check, function(req, res){
+app.get('/picsells', login_check, function(req, res){
 	res.sendFile('./pixi.html', {root: __dirname});
 })
 
