@@ -1,0 +1,76 @@
+version: "3"
+
+services:
+  db1:
+    image: deadrobots/pixi:datastore
+    restart: always
+    networks:
+        net1:
+          aliases:
+            - pixidb
+
+  app1:
+    build:
+      context: ./app
+    restart: always
+    ports:
+      - "8001:8000"
+    networks:
+      - net1
+
+  db2:
+    image: deadrobots/pixi:datastore
+    restart: always
+    networks:
+        net2:
+          aliases:
+            - pixidb
+
+  app2:
+    build:
+      context: ./app
+    restart: always
+    ports:
+      - "8002:8000"
+    networks:
+      - net2
+
+  db3:
+    image: deadrobots/pixi:datastore
+    restart: always
+    networks:
+        net3:
+          aliases:
+            - pixidb
+
+  app3:
+    build:
+      context: ./app
+    restart: always
+    ports:
+      - "8003:8000"
+    networks:
+      - net3
+
+  db4:
+    image: deadrobots/pixi:datastore
+    restart: always
+    networks:
+        net4:
+          aliases:
+            - pixidb
+
+  app4:
+    build:
+      context: ./app
+    restart: always
+    ports:
+      - "8004:8000"
+    networks:
+      - net4
+
+networks:
+  net1:
+  net2:
+  net3:
+  net4:
