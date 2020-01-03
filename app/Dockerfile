@@ -12,7 +12,5 @@ RUN npm install --save express
 COPY . /usr/src/pixi/web
 COPY uploads/ /usr/src/pixi/web/uploads/
 
-RUN npm install -g nodemon
-
 EXPOSE 8000
-CMD ["nodemon", "/usr/src/pixi/web/server.js"]
+CMD ["node", "/usr/src/pixi/web/server.js"]
