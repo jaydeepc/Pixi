@@ -30,6 +30,11 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
 //var dbname = 'mongodb://localhost:27017/Pixidb';
 var dbname = 'mongodb://pixidb:27017/Pixidb';
+dbname = process.env.MONGODB_URI || dbname ;
+
+var bind_port = 8000;
+bind_port = process.env.PORT || bind_port;
+
 //create express server and register global middleware
 var api = express();
 api.use(bodyParser.json());
@@ -839,7 +844,7 @@ app.use(session({
 }));
 
 //web app binds to interface pixidb:8000
-app.listen(8000, function(){
+app.listen(bind_port, function(){
 	if(process.env.NODE_ENV === undefined)
 		process.env.NODE_ENV = 'development';
 	console.log("Server running on pixidb, port %d in %s mode.", this.address().port, process.env.NODE_ENV);

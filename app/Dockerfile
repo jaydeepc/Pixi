@@ -1,16 +1,17 @@
 FROM node:6-alpine
-RUN echo -e "http://dl-cdn.alpinelinux.org/alpine/v3.5/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.5/community" > /etc/apk/repositories
-RUN apk add --no-cache make gcc g++ python
-RUN rm -rf /usr/src/pixi/web/uploads
-RUN mkdir -p /usr/src/pixi/web
-WORKDIR /usr/src/pixi/web
-COPY package.json /usr/src/pixi/web
-
-RUN npm install --save
-RUN npm install --save express
+ENV MONGODB_URI="mongodb://pixidb:27017/Pixidb"
+RUN echo -e "http://dl-cdn.alpinelinux.org/alpine/v3.5/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.5/community" > /etc/apk/repositories && \
+    echo 'http://dl-cdn.alpinelinux.org/alpine/v3.9/community' >> /etc/apk/repositories && \
+    apk add --no-cache make gcc g++ python mongodb-tools && \
+    rm -rf /usr/src/pixi/web/uploads &&\
+    mkdir -p /usr/src/pixi/web
 
 COPY . /usr/src/pixi/web
-COPY uploads/ /usr/src/pixi/web/uploads/
+
+WORKDIR /usr/src/pixi/web
+
+RUN npm install --save && \
+    npm install --save express
 
 EXPOSE 8000
-CMD ["node", "/usr/src/pixi/web/server.js"]
+CMD ["/usr/src/pixi/web/init.sh"]

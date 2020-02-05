@@ -19,3 +19,5 @@ services:
     ports:
       - "8000:8000"
       - "8090:8090"
+    environment:
+      - MONGODB_URI=mongodb://pixidb:27017/Pixidb
